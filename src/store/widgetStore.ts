@@ -8,7 +8,7 @@ interface WidgetState {
   toasts: ToastMessage[];
   isHydrated: boolean;
   
-  // Widget Actions
+
   addWidget: (widget: Partial<WidgetConfig> & { title: string; apiConfig: { url: string; method?: 'GET' | 'POST' } }) => string;
   updateWidget: (id: string, updates: Partial<WidgetConfig>) => void;
   deleteWidget: (id: string) => void;

@@ -1,17 +1,12 @@
 import { WidgetType, ChartType, WidgetSize } from '@/types';
 
-// ============================================
-// DEFAULT API KEYS (Demo/Fallback)
-// Users should enter their own keys via the UI
-// Keys are saved in localStorage
-// ============================================
-export const ALPHA_VANTAGE_API_KEY = 'demo'; // Get free key: https://www.alphavantage.co/support/#api-key
-export const FINNHUB_API_KEY = 'demo'; // Get free key: https://finnhub.io/register  
-export const INDIANAPI_KEY = 'demo'; // Get key: https://indianapi.in
 
-// ============================================
+export const ALPHA_VANTAGE_API_KEY = 'demo';
+export const FINNHUB_API_KEY = 'demo'; 
+export const INDIANAPI_KEY = 'demo';
+
+
 // API PROVIDERS
-// ============================================
 export type ApiProvider = 'alphavantage' | 'finnhub' | 'indianapi' | 'custom';
 
 export interface ApiProviderInfo {
@@ -53,9 +48,10 @@ export const API_PROVIDERS: ApiProviderInfo[] = [
   },
 ];
 
-// ============================================
+
+
+
 // PRESET CONFIGURATION
-// ============================================
 export interface ApiPresetConfig {
   name: string;
   url: string;
@@ -64,20 +60,20 @@ export interface ApiPresetConfig {
   defaultChartType?: ChartType;
   provider: ApiProvider;
   category: 'stocks' | 'crypto' | 'forex' | 'market' | 'indian' | 'charts';
-  symbolParam?: string; // Parameter name for symbol replacement
+  symbolParam?: string;
   defaultSymbol?: string;
-  headers?: Record<string, string>; // Custom headers (e.g., API keys)
+  headers?: Record<string, string>;
 }
 
-// ============================================
+
+
+
 // ALL API PRESETS
-// ============================================
 export const API_PRESETS: Record<string, ApiPresetConfig> = {
-  // ==========================================
-  // FINNHUB PRESETS (Better rate limits!)
-  // ==========================================
-  
+ 
+
   // Finnhub Stock
+
   finnhubQuote: {
     name: 'Finnhub · Quote',
     url: `https://finnhub.io/api/v1/quote?symbol=AAPL&token=${FINNHUB_API_KEY}`,
@@ -135,11 +131,7 @@ export const API_PRESETS: Record<string, ApiPresetConfig> = {
     category: 'market',
   },
 
-  // ==========================================
-  // CHART PRESETS (Alpha Vantage - Free Tier)
-  // Note: Finnhub candles require paid subscription
-  // ==========================================
-  
+
   // Stock Charts
   chartStockDaily: {
     name: 'Chart · Stock Daily',
@@ -186,6 +178,8 @@ export const API_PRESETS: Record<string, ApiPresetConfig> = {
     defaultSymbol: 'AAPL',
   },
   
+
+
   // Crypto Charts
   chartCryptoDaily: {
     name: 'Chart · Crypto Daily',
@@ -234,9 +228,6 @@ export const API_PRESETS: Record<string, ApiPresetConfig> = {
     defaultSymbol: 'EUR',
   },
 
-  // ==========================================
-  // ALPHA VANTAGE PRESETS
-  // ==========================================
   
   // Stock presets
   stockQuote: {
@@ -304,6 +295,8 @@ export const API_PRESETS: Record<string, ApiPresetConfig> = {
     defaultSymbol: 'IBM',
   },
   
+
+
   // Crypto presets
   cryptoExchangeRate: {
     name: 'Alpha Vantage · Crypto Rate',
@@ -398,10 +391,10 @@ export const API_PRESETS: Record<string, ApiPresetConfig> = {
     category: 'market',
   },
 
-  // ==========================================
-  // INDIANAPI PRESETS (BSE/NSE Indian Markets)
-  // ==========================================
+
   
+
+
   indianStockData: {
     name: 'IndianAPI · Stock Data',
     url: `https://stock.indianapi.in/stock?name=Reliance`,
@@ -490,9 +483,10 @@ export const API_PRESETS: Record<string, ApiPresetConfig> = {
   },
 };
 
-// ============================================
-// PRESET CATEGORIES FOR UI
-// ============================================
+
+
+
+
 export const PRESET_CATEGORIES = [
   { 
     key: 'charts', 
@@ -538,10 +532,13 @@ export const PRESET_CATEGORIES = [
   },
 ];
 
-// ============================================
-// DASHBOARD TEMPLATES
-// ============================================
-export interface DashboardTemplateConfig {
+
+
+
+
+
+export interface DashboardTemplateConfig 
+{
   name: string;
   description: string;
   widgets: Array<{
@@ -561,6 +558,8 @@ export interface DashboardTemplateConfig {
     createdAt?: string;
   }>;
 }
+
+
 
 export const DASHBOARD_TEMPLATES: Record<string, DashboardTemplateConfig> = {
   stockTrader: {
@@ -671,9 +670,10 @@ export const DASHBOARD_TEMPLATES: Record<string, DashboardTemplateConfig> = {
   },
 };
 
-// ============================================
-// HELPER DATA
-// ============================================
+
+
+
+
 export const POPULAR_SYMBOLS = {
   stocks: ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'TSLA', 'NVDA', 'JPM', 'V', 'WMT'],
   crypto: ['BTC', 'ETH', 'XRP', 'SOL', 'ADA', 'DOGE', 'DOT', 'MATIC', 'LINK', 'UNI'],
@@ -686,6 +686,8 @@ export const POPULAR_SYMBOLS = {
   ],
 };
 
+
+
 export const REFRESH_INTERVALS = [
   { value: 30, label: '30 seconds' },
   { value: 60, label: '1 minute' },
@@ -696,6 +698,7 @@ export const REFRESH_INTERVALS = [
   { value: 3600, label: '1 hour' },
 ];
 
+
 export const WIDGET_SIZES = [
   { value: 'small' as WidgetSize, label: 'Small', description: '1 column' },
   { value: 'medium' as WidgetSize, label: 'Medium', description: '2 columns' },
@@ -703,9 +706,11 @@ export const WIDGET_SIZES = [
   { value: 'full' as WidgetSize, label: 'Full Width', description: '4 columns' },
 ];
 
-// Helper function to replace symbol in URL
+
+
 export function replaceSymbolInUrl(url: string, newSymbol: string, paramName: string = 'symbol'): string {
   const urlObj = new URL(url);
+  
   urlObj.searchParams.set(paramName, newSymbol);
   return urlObj.toString();
 }

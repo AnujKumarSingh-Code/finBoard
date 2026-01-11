@@ -1,16 +1,21 @@
-// Widget Types
 export type WidgetType = 'card' | 'table' | 'chart' | 'watchlist' | 'news';
 export type ChartType = 'line' | 'area' | 'candlestick' | 'bar';
+
 export type TimeInterval = '1D' | '1W' | '1M' | '3M' | '1Y' | 'ALL';
+
 export type WidgetSize = 'small' | 'medium' | 'large' | 'full';
+
 
 export interface ApiConfig {
   url: string;
   method: 'GET' | 'POST';
-  headers?: Record<string, string>;
+  headers?: Record<string , string>;
   apiKey?: string;
   params?: Record<string, string>;
+
 }
+
+
 
 export interface FieldMapping {
   path: string;
@@ -31,29 +36,31 @@ export interface ChartConfig {
 export interface WidgetConfig {
   id: string;
   title: string;
-  name?: string; // Alias for title (backwards compat)
+  name?: string;
   type: WidgetType;
   apiConfig: ApiConfig;
-  refreshInterval: number; // in seconds
+  refreshInterval: number;
   size: WidgetSize;
-  position?: { x: number; y: number };
+
+  position?: { x: number;   y: number };
   chartConfig?: ChartConfig;
-  fieldMappings?: Array<{ sourceField: string; displayName: string; format?: string }>;
+  fieldMappings?: Array<{  sourceField: string;   displayName: string; format?: string }>;
   selectedFields?: FieldMapping[];
   symbols?: string[];
   preset?: string;
   createdAt: string;
   lastData?: unknown;
+
   lastUpdated?: number;
   isLoading?: boolean;
   error?: string | null;
 }
 
 export interface NewWidgetConfig extends Omit<WidgetConfig, 'id' | 'position' | 'lastData' | 'lastUpdated' | 'isLoading' | 'error'> {
-  position?: { x: number; y: number };
+  position?: { x: number;   y: number };
 }
 
-// API Response Types
+
 export interface StockQuote {
   symbol: string;
   name?: string;
@@ -68,6 +75,8 @@ export interface StockQuote {
   marketCap?: number;
   timestamp?: number;
 }
+
+
 
 export interface TimeSeriesData {
   date: string;
@@ -96,7 +105,7 @@ export interface NewsItem {
   image?: string;
 }
 
-// Dashboard Types
+
 export interface DashboardTemplate {
   id: string;
   name: string;
@@ -113,16 +122,17 @@ export interface DashboardConfig {
   updatedAt: number;
 }
 
-// Store Types
+
+
 export interface WidgetStore {
   widgets: WidgetConfig[];
   activeTheme: 'light' | 'dark' | 'system';
-  isLoading: boolean;
+  isLoading:  boolean;
   addWidget: (widget: NewWidgetConfig) => void;
-  updateWidget: (id: string, updates: Partial<WidgetConfig>) => void;
+  updateWidget:  (id: string, updates: Partial<WidgetConfig>) => void;
   deleteWidget: (id: string) => void;
   reorderWidgets: (widgets: WidgetConfig[]) => void;
-  updateWidgetData: (id: string, data: unknown) => void;
+  updateWidgetData:  (id: string, data: unknown) => void;
   setWidgetLoading: (id: string, isLoading: boolean) => void;
   setWidgetError: (id: string, error: string | null) => void;
   clearAllWidgets: () => void;
@@ -131,7 +141,8 @@ export interface WidgetStore {
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
 }
 
-// Cache Types
+
+
 export interface CacheEntry<T> {
   data: T;
   timestamp: number;
@@ -142,8 +153,11 @@ export interface ApiCache {
   [key: string]: CacheEntry<unknown>;
 }
 
-// Preset Types
-export interface ApiPreset {
+
+
+
+export interface ApiPreset 
+{
   id: string;
   name: string;
   provider: string;
@@ -157,21 +171,27 @@ export interface ApiPreset {
   requiresApiKey?: boolean;
 }
 
-// UI Types
-export interface ToastMessage {
+
+
+export interface ToastMessage 
+{
   id: string;
   type: 'success' | 'error' | 'warning' | 'info';
   title: string;
   message?: string;
+
   duration?: number;
 }
 
-export interface ModalProps {
+export interface ModalProps 
+{
   isOpen: boolean;
   onClose: () => void;
 }
 
-// Utility Types
-export type DeepPartial<T> = {
+
+
+export type DeepPartial<T> = 
+{
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };

@@ -37,7 +37,7 @@ export function SortableWidget({ id, children }: SortableWidgetProps) {
         isDragging && 'shadow-2xl'
       )}
     >
-      {/* Drag Handle - positioned at the top of the card */}
+      {/* Drag Handle ------ positioned at the top of the card */}
       <div
         {...attributes}
         {...listeners}

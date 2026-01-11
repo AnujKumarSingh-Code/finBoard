@@ -2,9 +2,11 @@
 
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+
 import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from 'lucide-react';
 import { cn } from '@/utils';
 import { ToastMessage } from '@/types';
+
 import { useWidgetStore } from '@/store/widgetStore';
 import { useMounted } from '@/hooks';
 
@@ -22,12 +24,16 @@ const colors = {
   info: 'bg-primary-50 dark:bg-primary-900/20 border-primary-200 dark:border-primary-800 text-primary-800 dark:text-primary-200',
 };
 
+
+
 const iconColors = {
   success: 'text-success-500',
   error: 'text-danger-500',
   warning: 'text-warning-500',
   info: 'text-primary-500',
 };
+
+
 
 function Toast({ toast }: { toast: ToastMessage }) {
   const removeToast = useWidgetStore((s) => s.removeToast);
@@ -60,7 +66,10 @@ function Toast({ toast }: { toast: ToastMessage }) {
       </button>
     </motion.div>
   );
+
 }
+
+
 
 export function ToastContainer() {
   const toasts = useWidgetStore((s) => s.toasts);

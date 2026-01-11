@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+
 import { useWidgetStore } from '@/store/widgetStore';
+
+
 import { fetchApiData } from '@/lib/api';
 import { WidgetConfig, ApiConfig } from '@/types';
 
@@ -50,7 +53,10 @@ export function useWidgetData(widget: WidgetConfig) {
   };
 }
 
+
+
 // Hook for API testing
+
 export function useApiTest() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<unknown>(null);
@@ -88,6 +94,8 @@ export function useApiTest() {
   };
 }
 
+
+
 // Hook for local storage state
 export function useLocalStorage<T>(key: string, initialValue: T) {
   const [storedValue, setStoredValue] = useState<T>(() => {
@@ -119,6 +127,8 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
   return [storedValue, setValue] as const;
 }
 
+
+
 // Hook for debounced value
 export function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
@@ -135,6 +145,8 @@ export function useDebounce<T>(value: T, delay: number): T {
   
   return debouncedValue;
 }
+
+
 
 // Hook for interval
 export function useInterval(callback: () => void, delay: number | null) {
@@ -155,6 +167,8 @@ export function useInterval(callback: () => void, delay: number | null) {
     return () => clearInterval(id);
   }, [delay]);
 }
+
+
 
 // Hook for click outside
 export function useClickOutside<T extends HTMLElement>(

@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef } from 'react';
+
 import { cn } from '@/utils';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -20,6 +21,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             {label}
           </label>
         )}
+
         <div className="relative">
           {leftIcon && (
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400">
@@ -45,6 +47,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             </div>
           )}
         </div>
+        
         {error && <p className="mt-1 text-sm text-danger-500">{error}</p>}
         {hint && !error && (
           <p className="mt-1 text-sm text-surface-500">{hint}</p>

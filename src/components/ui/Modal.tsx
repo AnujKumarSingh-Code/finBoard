@@ -1,11 +1,15 @@
 'use client';
 
 import { useEffect, useCallback, useRef } from 'react';
+
 import { createPortal } from 'react-dom';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+
 import { cn } from '@/utils';
 import { Button } from './Button';
+
 
 export interface ModalProps {
   isOpen: boolean;
@@ -19,6 +23,8 @@ export interface ModalProps {
   closeOnEscape?: boolean;
   className?: string;
 }
+
+
 
 export function Modal({
   isOpen,
@@ -43,6 +49,7 @@ export function Modal({
     [closeOnEscape, onClose]
   );
 
+
   useEffect(() => {
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
@@ -54,6 +61,8 @@ export function Modal({
       document.body.style.overflow = 'unset';
     };
   }, [isOpen, handleEscape]);
+
+
 
   const sizes = {
     sm: 'max-w-sm',
@@ -70,6 +79,7 @@ export function Modal({
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           {/* Backdrop */}
+
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -78,6 +88,8 @@ export function Modal({
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={closeOnOverlayClick ? onClose : undefined}
           />
+
+
 
           {/* Modal */}
           <motion.div
@@ -119,6 +131,8 @@ export function Modal({
                 )}
               </div>
             )}
+
+
 
             {/* Content */}
             <div className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">

@@ -1,9 +1,12 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+
 import { Search, ChevronUp, ChevronDown, TrendingUp, TrendingDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { WidgetConfig } from '@/types';
+
 import { parseGainersLosers, normalizeDataForDisplay } from '@/lib/api';
+
 import { formatCurrency, formatPercentage, cn } from '@/utils';
 import { Input } from '@/components/ui';
 
@@ -17,13 +20,17 @@ const ITEMS_PER_PAGE_OPTIONS = [5, 10, 20, 50];
 export function TableWidget({ widget, data }: TableWidgetProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortField, setSortField] = useState<string | null>(null);
+
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [activeTab, setActiveTab] = useState<'gainers' | 'losers' | 'active'>('gainers');
+
   const [currentPage, setCurrentPage] = useState(1);
+
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const tableData = useMemo(() => {
-    // Check if it's gainers/losers data
+
+    // Check if its gainers/losers data
     const gainersLosers = parseGainersLosers(data);
     if (gainersLosers) {
       switch (activeTab) {
@@ -38,9 +45,13 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
       }
     }
 
+
+
     // Fallback to generic data normalization
     return normalizeDataForDisplay(data);
   }, [data, activeTab]);
+
+
 
   const isGainersLosersData = useMemo(() => {
     return parseGainersLosers(data) !== null;
@@ -56,8 +67,10 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
     );
   }, [tableData]);
 
+
   const filteredData = useMemo(() => {
     let result = [...tableData];
+
 
     // Filter by search query
     if (searchQuery) {
@@ -68,25 +81,35 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
       );
     }
 
+
+
     // Sort
     if (sortField) {
       result.sort((a, b) => {
         const aVal = (a as Record<string, unknown>)[sortField];
         const bVal = (b as Record<string, unknown>)[sortField];
 
-        if (typeof aVal === 'number' && typeof bVal === 'number') {
+        if (typeof aVal === 'number' && typeof bVal === 'number') 
+          {
           return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
         }
+
+
 
         const aStr = String(aVal || '').replace(/[%$,]/g, '');
         const bStr = String(bVal || '').replace(/[%$,]/g, '');
 
+
         const aNum = parseFloat(aStr);
         const bNum = parseFloat(bStr);
 
-        if (!isNaN(aNum) && !isNaN(bNum)) {
+        if (!isNaN(aNum) && !isNaN(bNum)) 
+          {
           return sortDirection === 'asc' ? aNum - bNum : bNum - aNum;
         }
+
+
+
 
         return sortDirection === 'asc'
           ? aStr.localeCompare(bStr)
@@ -94,14 +117,22 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
       });
     }
 
+
+
     return result;
   }, [tableData, searchQuery, sortField, sortDirection]);
 
+
+
   // Pagination calculations
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
+
   const paginatedData = filteredData.slice(startIndex, endIndex);
+
+
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -115,6 +146,8 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
     }
   }, [currentPage, totalPages]);
 
+
+
   const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -124,14 +157,20 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
     }
   };
 
+
+
   const goToPage = (page: number) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
+
+
 
   // Generate page numbers to show
   const getPageNumbers = (): (number | 'ellipsis')[] => {
     const pages: (number | 'ellipsis')[] = [];
     const maxVisible = 5;
+
+
 
     if (totalPages <= maxVisible) {
       for (let i = 1; i <= totalPages; i++) {
@@ -149,7 +188,8 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
       const start = Math.max(2, currentPage - 1);
       const end = Math.min(totalPages - 1, currentPage + 1);
 
-      for (let i = start; i <= end; i++) {
+      for (let i = start; i <= end; i++) 
+      {
         pages.push(i);
       }
 
@@ -166,18 +206,25 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
     return pages;
   };
 
-  const formatValue = (key: string, value: unknown): React.ReactNode => {
+
+
+  const formatValue = (key: string, value: unknown): React.ReactNode => 
+  {
+
     if (value === null || value === undefined) return '-';
 
     const strValue = String(value);
 
-    // Check if it's a percentage
+
+    // Check if its a percentage
     if (key.toLowerCase().includes('percent') || strValue.includes('%')) {
+
       const num = parseFloat(strValue.replace('%', ''));
+
       if (!isNaN(num)) {
         return (
           <span className={cn(
-            'inline-flex items-center gap-1 font-medium',
+            'inline-flex items-center gap-1  font-medium',
             num >= 0 ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'
           )}>
             {num >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
@@ -187,11 +234,16 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
       }
     }
 
-    // Check if it's a price/currency
+
+    // Check if its a price/ currency
     if (key.toLowerCase().includes('price') || key.toLowerCase().includes('change_amount')) {
       const num = parseFloat(strValue.replace(/[$,]/g, ''));
+
+
       if (!isNaN(num)) {
-        if (key.toLowerCase().includes('change')) {
+
+        if (key.toLowerCase().includes('change')) 
+        {
           return (
             <span className={cn(
               'font-medium',
@@ -205,16 +257,23 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
       }
     }
 
-    // Check if it's a volume number
+
+
+    // Check if its a volume number
     if (key.toLowerCase().includes('volume')) {
       const num = parseFloat(strValue.replace(/,/g, ''));
-      if (!isNaN(num)) {
+
+      if (!isNaN(num)) 
+      {
         return new Intl.NumberFormat('en-US', { notation: 'compact' }).format(num);
       }
     }
 
+
     return strValue;
   };
+
+
 
   const formatColumnName = (key: string): string => {
     return key
@@ -236,6 +295,7 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
 
   return (
     <div className="flex flex-col h-full">
+
       {/* Tabs for gainers/losers */}
       {isGainersLosersData && (
         <div className="flex gap-1 p-1 bg-surface-100 dark:bg-surface-700 rounded-lg mb-3">
@@ -256,6 +316,8 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
         </div>
       )}
 
+
+
       {/* Search and Items Per Page */}
       <div className="flex items-center gap-2 mb-3">
         <div className="flex-1">
@@ -267,6 +329,8 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
             className="text-sm"
           />
         </div>
+
+
         <select
           value={itemsPerPage}
           onChange={(e) => setItemsPerPage(Number(e.target.value))}
@@ -278,7 +342,10 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
             </option>
           ))}
         </select>
+
       </div>
+
+
 
       {/* Table */}
       <div className="flex-1 overflow-auto rounded-lg border border-surface-200 dark:border-surface-700">
@@ -330,6 +397,8 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
         </table>
       </div>
 
+
+
       {/* Pagination Controls */}
       <div className="flex items-center justify-between mt-3 pt-2 border-t border-surface-100 dark:border-surface-800">
         {/* Info */}
@@ -342,6 +411,7 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
             'No items'
           )}
         </div>
+
 
         {/* Page Controls */}
         {totalPages > 1 && (
@@ -360,6 +430,7 @@ export function TableWidget({ widget, data }: TableWidgetProps) {
             >
               <ChevronsLeft className="w-4 h-4" />
             </button>
+
 
             {/* Previous Page */}
             <button

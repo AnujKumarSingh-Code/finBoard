@@ -7,6 +7,9 @@ function generateCacheKey(config: ApiConfig): string {
   return `${config.url}:${params}`;
 }
 
+
+
+
 // Build URL with parameters
 function buildUrl(config: ApiConfig): string {
   const url = new URL(config.url);
@@ -22,11 +25,13 @@ function buildUrl(config: ApiConfig): string {
   return url.toString();
 }
 
+
 // Get API keys from localStorage
 function getApiKeysFromStorage(): { alphaVantage: string; finnhub: string; indianApi: string } {
   if (typeof window === 'undefined') {
     return { alphaVantage: '', finnhub: '', indianApi: '' };
   }
+
   return {
     alphaVantage: localStorage.getItem('finboard_alpha_vantage_key') || '',
     finnhub: localStorage.getItem('finboard_finnhub_key') || '',
@@ -34,11 +39,14 @@ function getApiKeysFromStorage(): { alphaVantage: string; finnhub: string; india
   };
 }
 
-// Inject API keys into URL (replaces demo keys with user's real keys)
+
+
+
+// Inject API keys into URL (replaces demo keys with users real keys)
 function injectApiKeysIntoUrl(url: string, apiKeys: { alphaVantage: string; finnhub: string; indianApi: string }): string {
   let newUrl = url;
   
-  // Alpha Vantage: Replace apikey=demo or any apikey with user's key
+  // Alpha Vantage: Replace apikey=demo or any apikey with users key
   if (apiKeys.alphaVantage && url.includes('alphavantage.co')) {
     // Replace demo or any existing key
     if (newUrl.includes('apikey=')) {
@@ -49,7 +57,8 @@ function injectApiKeysIntoUrl(url: string, apiKeys: { alphaVantage: string; finn
     }
   }
   
-  // Finnhub: Replace token=demo or any token with user's key
+
+  // Finnhub: Replace token=demo or any token with users key
   if (apiKeys.finnhub && url.includes('finnhub.io')) {
     // Replace demo or any existing key
     if (newUrl.includes('token=')) {
@@ -63,22 +72,28 @@ function injectApiKeysIntoUrl(url: string, apiKeys: { alphaVantage: string; finn
   return newUrl;
 }
 
+
+
 // Main fetch function
 export async function fetchApiData(config: ApiConfig): Promise<unknown> {
+
   const cacheKey = generateCacheKey(config);
+
   const cache = useCacheStore.getState();
   
   // Check cache first
   const cachedData = cache.get(cacheKey);
-  if (cachedData) {
+  if (cachedData) 
+  {
     return cachedData;
   }
   
   let url = buildUrl(config);
+
   const apiKeys = getApiKeysFromStorage();
   
-  // INJECT API KEYS INTO URL - This ensures user's keys are always used
-  // Even for old widgets that have "demo" keys baked in
+  // INJECT API KEYS INTO URL ---- This ensures   user keys are always used
+  // Even for old widgets that have   demo keys baked in
   url = injectApiKeysIntoUrl(url, apiKeys);
   
   // Start with base headers
@@ -87,8 +102,8 @@ export async function fetchApiData(config: ApiConfig): Promise<unknown> {
     ...config.headers,
   };
   
-  // ALWAYS inject IndianAPI key from localStorage for indianapi.in requests
-  // This ensures the key is always fresh, even for old widgets
+  // ALWAYS inject IndianAPI key   from localStorage for indianapi.in requests
+  // This ensures the key is always    fresh , even for old widgets
   if (url.includes('indianapi.in') && apiKeys.indianApi) {
     headers['X-Api-Key'] = apiKeys.indianApi;
   }
@@ -105,17 +120,16 @@ export async function fetchApiData(config: ApiConfig): Promise<unknown> {
     
     const data = await response.json();
     
-    // Don't throw for Alpha Vantage error messages - let components handle them
+
+    // Dont throw for Alpha Vantage error messages ---- let components handle them
     // This allows ChartWidget to show user-friendly error messages
     if (data['Error Message']) {
       console.warn('API Error:', data['Error Message']);
-      // Still return the data so component can display error
     }
     
     if (data['Note']) {
       // API rate limit warning
       console.warn('API Rate Limit:', data['Note']);
-      // Still return the data so component can display error
     }
     
     if (data['Information']) {
@@ -126,6 +140,7 @@ export async function fetchApiData(config: ApiConfig): Promise<unknown> {
     cache.set(cacheKey, data, 30000);
     
     return data;
+
   } catch (error) {
     if (error instanceof Error) {
       throw error;
@@ -133,6 +148,8 @@ export async function fetchApiData(config: ApiConfig): Promise<unknown> {
     throw new Error('Failed to fetch data');
   }
 }
+
+
 
 // Parse Alpha Vantage time series data
 export function parseTimeSeriesData(data: unknown): TimeSeriesData[] {
@@ -142,6 +159,8 @@ export function parseTimeSeriesData(data: unknown): TimeSeriesData[] {
   
   const obj = data as Record<string, unknown>;
   
+
+
   // Find the time series key
   const timeSeriesKey = Object.keys(obj).find(
     (key) => key.toLowerCase().includes('time series') || 
@@ -151,6 +170,8 @@ export function parseTimeSeriesData(data: unknown): TimeSeriesData[] {
   if (!timeSeriesKey) {
     return [];
   }
+
+
   
   const timeSeries = obj[timeSeriesKey] as Record<string, Record<string, string>>;
   
@@ -159,6 +180,7 @@ export function parseTimeSeriesData(data: unknown): TimeSeriesData[] {
   }
   
   const result: TimeSeriesData[] = [];
+
   
   Object.entries(timeSeries).forEach(([date, values]) => {
     const open = parseFloat(values['1. open'] || values['1a. open (USD)'] || '0');
@@ -183,6 +205,10 @@ export function parseTimeSeriesData(data: unknown): TimeSeriesData[] {
   return result;
 }
 
+
+
+
+
 // Parse global quote data
 export function parseGlobalQuote(data: unknown): {
   symbol: string;
@@ -205,6 +231,7 @@ export function parseGlobalQuote(data: unknown): {
   if (!quote) {
     return null;
   }
+
   
   return {
     symbol: quote['01. symbol'] || '',
@@ -218,6 +245,8 @@ export function parseGlobalQuote(data: unknown): {
     volume: parseFloat(quote['06. volume'] || '0'),
   };
 }
+
+
 
 // Parse exchange rate data
 export function parseExchangeRate(data: unknown): {
@@ -314,7 +343,7 @@ export function parseCompanyOverview(data: unknown): Record<string, string | num
 export function normalizeDataForDisplay(data: unknown): Record<string, unknown>[] {
   if (!data) return [];
   
-  // If it's an array, return as is
+  // If its an array, return as is
   if (Array.isArray(data)) {
     return data.map(item => {
       if (typeof item === 'object' && item !== null) {
@@ -324,7 +353,7 @@ export function normalizeDataForDisplay(data: unknown): Record<string, unknown>[
     });
   }
   
-  // If it's an object with a nested data structure
+  // If its an object with a nested data structure
   if (typeof data === 'object') {
     const obj = data as Record<string, unknown>;
     

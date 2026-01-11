@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+
 import { 
   TrendingUp, TrendingDown, Minus, DollarSign, Percent, Hash, 
   Calendar, Globe, Building2, ArrowUpRight, ArrowDownRight,
@@ -9,8 +10,13 @@ import {
   Image as ImageIcon, ExternalLink, Link as LinkIcon, Newspaper,
   Phone, Mail, MapPin
 } from 'lucide-react';
+
+
 import { formatCurrency, formatPercentage, formatNumber, cn } from '@/utils';
+
+
 import { WidgetConfig } from '@/types';
+
 
 interface CardWidgetProps {
   widget: WidgetConfig;
@@ -22,19 +28,17 @@ interface CardWidgetProps {
   }>;
 }
 
-// ============================================
-// DATA EXTRACTION - Handles all API formats
-// ============================================
+
+
+
+
 function extractData(data: unknown): Record<string, unknown> | null {
   if (!data || typeof data !== 'object') return null;
   
   const obj = data as Record<string, unknown>;
   
-  // ============================================
-  // CHECK FOR API ERRORS/RATE LIMITS FIRST
-  // ============================================
+
   
-  // Alpha Vantage rate limit message
   if (obj['Information'] && typeof obj['Information'] === 'string') {
     const info = obj['Information'] as string;
     if (info.toLowerCase().includes('thank you') || info.toLowerCase().includes('rate limit') || info.toLowerCase().includes('api call frequency')) {
@@ -51,6 +55,8 @@ function extractData(data: unknown): Record<string, unknown> | null {
     };
   }
   
+
+
   // Alpha Vantage Note (rate limit warning)
   if (obj['Note'] && typeof obj['Note'] === 'string') {
     const note = obj['Note'] as string;
@@ -71,12 +77,10 @@ function extractData(data: unknown): Record<string, unknown> | null {
       message: (obj['Error Message'] || obj['error']) as string,
     };
   }
+
   
-  // ============================================
-  // ALPHA VANTAGE FORMATS
-  // ============================================
-  
-  // 1. Global Quote (Stock Quote)
+
+
   if (obj['Global Quote'] && typeof obj['Global Quote'] === 'object') {
     const quote = obj['Global Quote'] as Record<string, string>;
     return {
@@ -109,6 +113,8 @@ function extractData(data: unknown): Record<string, unknown> | null {
     };
   }
   
+
+
   // 3. Time Series data (FX, Crypto, Stocks - Daily/Weekly/Monthly)
   const timeSeriesKeys = Object.keys(obj).filter(key => 
     key.toLowerCase().includes('time series') ||
@@ -125,7 +131,8 @@ function extractData(data: unknown): Record<string, unknown> | null {
       const latestDate = dates[0];
       const latestData = series[latestDate];
       
-      // Clean up keys (remove numbering like "1. ", "1a. ", etc.)
+      
+      
       const cleaned: Record<string, unknown> = { date: latestDate };
       Object.entries(latestData).forEach(([key, value]) => {
         const cleanKey = key
@@ -141,6 +148,8 @@ function extractData(data: unknown): Record<string, unknown> | null {
     }
   }
   
+
+
   // 4. Handle Meta Data - skip it and look for actual data
   if (obj['Meta Data']) {
     const dataKeys = Object.keys(obj).filter(key => key !== 'Meta Data');
@@ -149,9 +158,9 @@ function extractData(data: unknown): Record<string, unknown> | null {
     }
   }
   
-  // ============================================
-  // FINNHUB FORMATS
-  // ============================================
+
+  
+
   
   // 5. Finnhub Quote (simple format with c, o, h, l, etc.)
   if ('c' in obj && 'o' in obj && 'h' in obj && 'l' in obj && !obj['symbol']) {
@@ -167,6 +176,8 @@ function extractData(data: unknown): Record<string, unknown> | null {
     };
   }
   
+
+
   // 6. Finnhub Company Profile
   if (obj.ticker && obj.name && (obj.finnhubIndustry || obj.marketCapitalization)) {
     return {
@@ -184,6 +195,8 @@ function extractData(data: unknown): Record<string, unknown> | null {
     };
   }
   
+
+
   // 7. Finnhub Recommendation Trends (array format)
   if (Array.isArray(obj) && obj.length > 0 && obj[0].buy !== undefined && obj[0].sell !== undefined) {
     const latest = obj[0] as Record<string, unknown>;
@@ -197,9 +210,12 @@ function extractData(data: unknown): Record<string, unknown> | null {
     };
   }
   
+
+
   // 8. Finnhub Peers (string array)
   if (Array.isArray(obj) && obj.length > 0 && typeof obj[0] === 'string') {
     const peers = obj as string[];
+
     return {
       peers: peers.slice(0, 10).join(', '),
       totalPeers: peers.length,
@@ -209,6 +225,7 @@ function extractData(data: unknown): Record<string, unknown> | null {
   // 9. Finnhub Market News (array of news items)
   if (Array.isArray(obj) && obj.length > 0 && obj[0].headline !== undefined) {
     const news = obj[0] as Record<string, unknown>;
+
     return {
       headline: news.headline,
       datetime: news.datetime ? new Date((news.datetime as number) * 1000).toLocaleString() : undefined,
@@ -219,13 +236,15 @@ function extractData(data: unknown): Record<string, unknown> | null {
     };
   }
   
-  // ============================================
-  // INDIANAPI FORMATS
-  // ============================================
+
+  
+
+
   
   // 10. IndianAPI Stock Data
   if (obj.tickerId && obj.companyName && obj.currentPrice) {
     const currentPrice = obj.currentPrice as Record<string, unknown>;
+
     return {
       ticker: obj.tickerId,
       company: obj.companyName,
@@ -237,6 +256,8 @@ function extractData(data: unknown): Record<string, unknown> | null {
       yearLow: obj.yearLow,
     };
   }
+
+
   
   // 11. IndianAPI 52 Week High/Low
   if (obj.BSE_52WeekHighLow || obj.NSE_52WeekHighLow) {
@@ -257,6 +278,8 @@ function extractData(data: unknown): Record<string, unknown> | null {
     return result;
   }
   
+
+
   // 12. IndianAPI Industry Search Results
   if (Array.isArray(obj) && obj.length > 0 && obj[0].commonName && obj[0].mgIndustry) {
     const items = obj.slice(0, 5) as Record<string, unknown>[];
@@ -268,14 +291,13 @@ function extractData(data: unknown): Record<string, unknown> | null {
     };
   }
   
-  // ============================================
-  // GENERIC ARRAY HANDLING
-  // ============================================
+
+  
+
   
   if (Array.isArray(obj)) {
     if (obj.length === 0) return null;
     
-    // If it's an array of objects, extract first item
     if (typeof obj[0] === 'object' && obj[0] !== null) {
       const firstItem = obj[0] as Record<string, unknown>;
       return {
@@ -283,24 +305,26 @@ function extractData(data: unknown): Record<string, unknown> | null {
         _totalItems: obj.length,
       };
     }
-    
-    // Array of primitives
+
+
     return {
       items: obj.slice(0, 5).join(', '),
       totalCount: obj.length,
     };
   }
   
-  // ============================================
-  // GENERIC OBJECT - FLATTEN IF NESTED
-  // ============================================
+
+  
+
   
   const result: Record<string, unknown> = {};
   
   for (const [key, value] of Object.entries(obj)) {
     if (value === null || value === undefined) continue;
     
-    if (typeof value === 'object' && !Array.isArray(value)) {
+
+    if (typeof value === 'object' && !Array.isArray(value)) 
+    {
       // Flatten one level of nesting
       const nested = value as Record<string, unknown>;
       for (const [nestedKey, nestedValue] of Object.entries(nested)) {
@@ -317,9 +341,9 @@ function extractData(data: unknown): Record<string, unknown> | null {
   return Object.keys(result).length > 0 ? result : obj as Record<string, unknown>;
 }
 
-// ============================================
-// URL & IMAGE DETECTION HELPERS
-// ============================================
+
+
+
 
 const isImageUrl = (value: unknown): boolean => {
   if (typeof value !== 'string') return false;
@@ -331,6 +355,9 @@ const isImageUrl = (value: unknown): boolean => {
     str.includes('static2.finnhub')
   );
 };
+
+
+
 
 const isWebUrl = (value: unknown): boolean => {
   if (typeof value !== 'string') return false;
@@ -348,9 +375,9 @@ const isEmail = (value: unknown): boolean => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 };
 
-// ============================================
-// FORMATTING HELPERS
-// ============================================
+
+
+
 
 const getFieldIcon = (key: string) => {
   const keyLower = key.toLowerCase();
@@ -390,6 +417,8 @@ const getFieldIcon = (key: string) => {
     
   return <Hash className="w-4 h-4" />;
 };
+
+
 
 const formatValue = (
   value: unknown, 
@@ -544,9 +573,14 @@ const formatLabel = (key: string): string => {
     .join(' ');
 };
 
-// ============================================
-// IMAGE COMPONENT WITH LOADING STATE
-// ============================================
+
+
+
+
+
+
+
+
 
 const ImageField: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
   const [loaded, setLoaded] = useState(false);
@@ -581,9 +615,10 @@ const ImageField: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
   );
 };
 
-// ============================================
-// MAIN COMPONENT
-// ============================================
+
+
+
+
 
 const CardWidget: React.FC<CardWidgetProps> = ({ widget, data, fields }) => {
   const dataObj = extractData(data);
@@ -620,6 +655,8 @@ const CardWidget: React.FC<CardWidgetProps> = ({ widget, data, fields }) => {
     );
   }
   
+
+
   // Handle generic API error
   if (dataObj.error && !dataObj.price && !dataObj.exchangeRate) {
     return (
@@ -636,6 +673,8 @@ const CardWidget: React.FC<CardWidgetProps> = ({ widget, data, fields }) => {
       </div>
     );
   }
+
+
 
   // Get fields to display
   const displayFields: Array<{
@@ -693,7 +732,8 @@ const CardWidget: React.FC<CardWidgetProps> = ({ widget, data, fields }) => {
       return <ImageField src={value as string} alt={formatLabel(key)} />;
     }
     
-    // Check if it's a web URL (but not an image)
+
+    // Check if its a web URL (but not an image)
     if (isWebUrl(value) && !isImageUrl(value)) {
       const url = value as string;
       const displayUrl = url.replace(/^https?:\/\/(www\.)?/, '').substring(0, 25);
@@ -710,7 +750,8 @@ const CardWidget: React.FC<CardWidgetProps> = ({ widget, data, fields }) => {
       );
     }
     
-    // Check if it's a phone number
+
+    // Check if its a phone number
     if (isPhoneNumber(key, value)) {
       const phone = String(value);
       return (
@@ -723,7 +764,8 @@ const CardWidget: React.FC<CardWidgetProps> = ({ widget, data, fields }) => {
       );
     }
     
-    // Check if it's an email
+
+    // Check if its an email
     if (isEmail(value)) {
       const email = value as string;
       return (
@@ -801,6 +843,8 @@ const CardWidget: React.FC<CardWidgetProps> = ({ widget, data, fields }) => {
         </motion.div>
       )}
 
+
+
       {/* Other Fields Grid */}
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-2 gap-3">
@@ -808,7 +852,8 @@ const CardWidget: React.FC<CardWidgetProps> = ({ widget, data, fields }) => {
             const value = dataObj[field.key];
             if (value === null || value === undefined || value === '') return null;
 
-            // Check if this is an image field for full-width display
+            
+            
             const isImage = isImageUrl(value);
             
             return (
@@ -823,9 +868,11 @@ const CardWidget: React.FC<CardWidgetProps> = ({ widget, data, fields }) => {
                 )}
               >
                 <div className="flex items-center gap-2 mb-1">
+
                   <span className="text-slate-400 dark:text-slate-500">
                     {getFieldIcon(field.key)}
                   </span>
+
                   <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                     {field.label}
                   </p>
@@ -839,6 +886,8 @@ const CardWidget: React.FC<CardWidgetProps> = ({ widget, data, fields }) => {
           })}
         </div>
       </div>
+
+      
 
       {/* Show total count if many fields */}
       {otherFields.length > 10 && (

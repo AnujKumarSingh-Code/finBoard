@@ -2,6 +2,7 @@
 
 import { forwardRef } from 'react';
 import { cn } from '@/utils';
+
 import { ChevronDown } from 'lucide-react';
 
 export interface SelectOption {
@@ -19,6 +20,8 @@ export interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectE
   onChange?: (value: string) => void;
 }
 
+
+
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, label, error, hint, options, placeholder, onChange, ...props }, ref) => {
     return (
@@ -28,6 +31,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             {label}
           </label>
         )}
+
         <div className="relative">
           <select
             ref={ref}
@@ -66,6 +70,8 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
     );
   }
 );
+
+
 
 Select.displayName = 'Select';
 

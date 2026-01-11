@@ -11,23 +11,34 @@ import {
   AlertCircle,
   Clock,
 } from 'lucide-react';
+
+
 import { WidgetConfig } from '@/types';
 import { useWidgetStore } from '@/store/widgetStore';
+
 import { useWidgetData } from '@/hooks';
 import { formatRelativeTime, cn } from '@/utils';
 import { Button } from '@/components/ui';
+
 import { ChartWidget } from './ChartWidget';
 import { TableWidget } from './TableWidget';
+
 import { CardWidget } from './CardWidget';
+
 import { EditWidgetModal } from '@/components/modals/EditWidgetModal';
+
+
 
 interface WidgetCardProps {
   widget: WidgetConfig;
 }
 
+
+
 export function WidgetCard({ widget }: WidgetCardProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+
   const { deleteWidget, duplicateWidget } = useWidgetStore();
   const { data, isLoading, error, refetch } = useWidgetData(widget);
 
@@ -36,12 +47,14 @@ export function WidgetCard({ widget }: WidgetCardProps) {
       return (
         <div className="flex flex-col items-center justify-center h-full min-h-[150px] text-center p-4">
           <AlertCircle className="w-8 h-8 text-danger-500 mb-2" />
-          <p className="text-sm text-danger-600 dark:text-danger-400 font-medium">
+          <p className="text-sm text-danger-600 dark:text-danger-400  font-medium">
             Failed to load data
           </p>
-          <p className="text-xs text-surface-500 mt-1 max-w-[200px]">
+
+          <p className="text-xs text-surface-500  mt-1 max-w-[200px]">
             {error}
           </p>
+
           <Button
             variant="ghost"
             size="sm"
@@ -55,10 +68,13 @@ export function WidgetCard({ widget }: WidgetCardProps) {
       );
     }
 
+
+
     if (isLoading && !data) {
       return (
         <div className="flex items-center justify-center h-full min-h-[150px]">
-          <div className="flex flex-col items-center gap-2">
+
+          <div className="flex flex-col  items-center gap-2">
             <RefreshCw className="w-6 h-6 text-primary-500 animate-spin" />
             <span className="text-sm text-surface-500">Loading...</span>
           </div>
@@ -66,7 +82,10 @@ export function WidgetCard({ widget }: WidgetCardProps) {
       );
     }
 
-    switch (widget.type) {
+
+
+    switch (widget.type) 
+    {
       case 'chart':
         return <ChartWidget widget={widget} data={data} />;
       case 'table':
@@ -83,9 +102,11 @@ export function WidgetCard({ widget }: WidgetCardProps) {
         layout
         className="widget-card h-full flex flex-col"
       >
+
         {/* Header */}
-        <div className="flex items-center justify-between p-4 pt-6 border-b border-surface-100 dark:border-surface-700">
+        <div className="flex items-center justify-between p-4 pt-6 border-b  border-surface-100 dark:border-surface-700">
           <div className="flex-1 min-w-0">
+
             <h3 className="font-semibold text-surface-900 dark:text-white truncate">
               {widget.title || widget.name}
             </h3>
@@ -98,6 +119,8 @@ export function WidgetCard({ widget }: WidgetCardProps) {
               </div>
             )}
           </div>
+
+
 
           <div className="flex items-center gap-1">
             {/* Refresh Button */}
@@ -115,6 +138,7 @@ export function WidgetCard({ widget }: WidgetCardProps) {
                 )}
               />
             </Button>
+
 
             {/* Menu */}
             <div className="relative">
@@ -184,7 +208,7 @@ export function WidgetCard({ widget }: WidgetCardProps) {
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-2 border-t border-surface-100 dark:border-surface-700 text-xs text-surface-400 flex items-center justify-between">
+        <div className="px-4 py-2 border-t  border-surface-100 dark:border-surface-700 text-xs text-surface-400 flex items-center justify-between">
           <span>Refreshes every {widget.refreshInterval}s</span>
           {widget.preset && (
             <span className="badge-primary text-xs">
@@ -193,6 +217,8 @@ export function WidgetCard({ widget }: WidgetCardProps) {
           )}
         </div>
       </motion.div>
+
+
 
       {/* Edit Modal */}
       {showEditModal && (
