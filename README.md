@@ -2,7 +2,7 @@
 
 A modern, real-time finance monitoring dashboard  built with Next.js 15, React 19, and TypeScript. Create custom widgets to track stocks, crypto, forex, and more using financial APIs.
 
-![FinBoard Dashboard](https://via.placeholder.com/800x400/0ea5e9/ffffff?text=FinBoard+Dashboard)
+[FinBoard Dashboard](https://via.placeholder.com/800x400/0ea5e9/ffffff?text=FinBoard+Dashboard)
 
 ## Features
 
